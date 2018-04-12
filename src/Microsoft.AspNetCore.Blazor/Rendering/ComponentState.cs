@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Blazor.Components;
 using Microsoft.AspNetCore.Blazor.RenderTree;
 using System;
+using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Blazor.Rendering
 {
@@ -73,7 +74,7 @@ namespace Microsoft.AspNetCore.Blazor.Rendering
             RenderTreeDiffBuilder.DisposeFrames(batchBuilder, _renderTreeBuilderCurrent.GetFrames());
         }
 
-        public void DispatchEvent(UIEventHandler handler, UIEventArgs eventArgs)
+        public void DispatchEvent(Func<UIEventArgs, Task> handler, UIEventArgs eventArgs)
         {
             if (_component is IHandleEvent handleEventComponent)
             {

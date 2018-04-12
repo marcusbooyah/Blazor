@@ -309,7 +309,7 @@ namespace Microsoft.AspNetCore.Blazor.Build.Test
                     Assert.Equal(1, frame.Sequence);
                     Assert.NotNull(frame.AttributeValue);
 
-                    ((UIEventHandler)frame.AttributeValue)(null);
+                    ((Action<UIEventArgs>)frame.AttributeValue)(null);
                     Assert.True((bool)handlerWasCalledProperty.GetValue(component));
                 },
                 frame => AssertFrame.Whitespace(frame, 2));
@@ -351,7 +351,7 @@ namespace Microsoft.AspNetCore.Blazor.Build.Test
                     AssertFrame.Attribute(frame, "onchange", 2);
 
                     // Trigger the change event to show it updates the property
-                    ((UIEventHandler)frame.AttributeValue)(new UIChangeEventArgs
+                    ((Action<UIEventArgs>)frame.AttributeValue)(new UIChangeEventArgs
                     {
                         Value = "Modified value"
                     });
@@ -381,7 +381,7 @@ namespace Microsoft.AspNetCore.Blazor.Build.Test
                     AssertFrame.Attribute(frame, "onchange", 2);
 
                     // Trigger the change event to show it updates the property
-                    ((UIEventHandler)frame.AttributeValue)(new UIChangeEventArgs
+                    ((Action<UIEventArgs>)frame.AttributeValue)(new UIChangeEventArgs
                     {
                         Value = "Modified value"
                     });
@@ -412,7 +412,7 @@ namespace Microsoft.AspNetCore.Blazor.Build.Test
 
                     // Trigger the change event to show it updates the property
                     var newDateValue = new DateTime(2018, 3, 5, 4, 5, 6);
-                    ((UIEventHandler)frame.AttributeValue)(new UIChangeEventArgs
+                    ((Action<UIEventArgs>)frame.AttributeValue)(new UIChangeEventArgs
                     {
                         Value = newDateValue.ToString()
                     });
@@ -443,7 +443,7 @@ namespace Microsoft.AspNetCore.Blazor.Build.Test
                     AssertFrame.Attribute(frame, "onchange", 2);
 
                     // Trigger the change event to show it updates the property
-                    ((UIEventHandler)frame.AttributeValue)(new UIChangeEventArgs
+                    ((Action<UIEventArgs>)frame.AttributeValue)(new UIChangeEventArgs
                     {
                         Value = new DateTime(2018, 3, 5).ToString(testDateFormat)
                     });
@@ -553,7 +553,7 @@ namespace Microsoft.AspNetCore.Blazor.Build.Test
                     AssertFrame.Attribute(frame, "onchange", 2);
 
                     // Trigger the change event to show it updates the property
-                    ((UIEventHandler)frame.AttributeValue)(new UIChangeEventArgs
+                    ((Action<UIEventArgs>)frame.AttributeValue)(new UIChangeEventArgs
                     {
                         Value = false
                     });
@@ -584,7 +584,7 @@ namespace Microsoft.AspNetCore.Blazor.Build.Test
                     AssertFrame.Attribute(frame, "onchange", 2);
 
                     // Trigger the change event to show it updates the property
-                    ((UIEventHandler)frame.AttributeValue)(new UIChangeEventArgs
+                    ((Action<UIEventArgs>)frame.AttributeValue)(new UIChangeEventArgs
                     {
                         Value = MyEnum.SecondValue.ToString()
                     });

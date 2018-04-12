@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Blazor.Components;
 using Microsoft.AspNetCore.Blazor.RenderTree;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Blazor.Rendering
 {
@@ -23,8 +24,8 @@ namespace Microsoft.AspNetCore.Blazor.Rendering
         private bool _isBatchInProgress;
 
         private int _lastEventHandlerId = 0;
-        private readonly Dictionary<int, UIEventHandler> _eventHandlersById
-            = new Dictionary<int, UIEventHandler>();
+        private readonly Dictionary<int, Func<UIEventArgs, Task>> _eventHandlersById
+            = new Dictionary<int, Func<UIEventArgs, Task>>();
 
         /// <summary>
         /// Constructs an instance of <see cref="Renderer"/>.
@@ -115,16 +116,17 @@ namespace Microsoft.AspNetCore.Blazor.Rendering
             var id = ++_lastEventHandlerId;
 
             // The attribute value might be a more specialized type like UIKeyboardEventHandler.
-            // In that case, it won't be a UIEventHandler, and it will go down the MulticastDelegate
+            // In that case, it won't be a Action<UIEventArgs>, and it will go down the MulticastDelegate
             // code path (MulticastDelegate is any delegate).
             //
-            // In order to dispatch the event, we need a UIEventHandler, so we're going weakly
+            // In order to dispatch the event, we need a Func<UIEventArgs, Task>, so we're going weakly
             // typed here. The user will get a cast exception if they map the wrong type of
             // delegate to the event.
-            if (frame.AttributeValue is UIEventHandler wrapper)
+            if (frame.AttributeValue is Func<UIEventArgs, Task> handler)
             {
-                _eventHandlersById.Add(id, wrapper);
+                _eventHandlersById.Add(id, handler);
             }
+
             // IMPORTANT: we're creating an additional delegate when necessary. This is
             // going to get cached in _eventHandlersById, but the render tree diff
             // will operate on 'AttributeValue' which means that we'll only create a new
@@ -132,14 +134,36 @@ namespace Microsoft.AspNetCore.Blazor.Rendering
             //
             // TLDR: If the component uses a method group or a non-capturing lambda
             // we don't allocate much.
+            else if (frame.AttributeValue is Action<UIEventArgs> wrapper)
+            {
+                _eventHandlersById.Add(id, (e) => 
+                {
+                    wrapper(e);
+                    return Task.CompletedTask;
+                });
+            }
             else if (frame.AttributeValue is Action action)
             {
-                _eventHandlersById.Add(id, (UIEventArgs e) => action());
+                _eventHandlersById.Add(id, (e) =>
+                {
+                    action();
+                    return Task.CompletedTask;
+                });
+            }
+            else if (frame.AttributeValue is Func<Task> asyncAction)
+            {
+                _eventHandlersById.Add(id, (e) =>
+                {
+                    return asyncAction();
+                });
             }
             else if (frame.AttributeValue is MulticastDelegate @delegate)
             {
-
-               _eventHandlersById.Add(id, (UIEventArgs e) => @delegate.DynamicInvoke(e));
+               _eventHandlersById.Add(id, (UIEventArgs e) => 
+               {
+                   var value = @delegate.DynamicInvoke(e);
+                   return value as Task;
+               });
             }
 
             frame = frame.WithAttributeEventHandlerId(id);

@@ -3,8 +3,8 @@
 <h1>Cookie counter</h1>
 <p>The server increments the count by one on each request.</p>
 <p>TestServer base URL: <input bind="@testServerBaseUrl" /></p>
-<button id="delete" onclick="@DeleteCookie">Delete cookie</button>
-<button id="increment" onclick="@GetAndIncrementCounter">Get and increment current value</button>
+<button id="delete" onclick="@DeleteCookie" disabled="@requestInProgress">Delete cookie</button>
+<button id="increment" onclick="@GetAndIncrementCounter" disabled="@requestInProgress">Get and increment current value</button>
 
 @if (!requestInProgress)
 {
@@ -17,22 +17,28 @@
     string testServerBaseUrl;
     string responseText;
 
-    async void DeleteCookie()
+    async Task DeleteCookie()
     {
         await DoRequest("api/cookie/reset");
-        StateHasChanged();
+        await Task.Delay(5000);
     }
 
-    async void GetAndIncrementCounter()
+    async Task GetAndIncrementCounter()
     {
         await DoRequest("api/cookie/increment");
-        StateHasChanged();
+        await Task.Delay(5000);
     }
 
     async Task DoRequest(string url)
     {
         requestInProgress = true;
-        responseText = await Http.GetStringAsync(testServerBaseUrl + url);
-        requestInProgress = false;
+        try
+        {
+            responseText = await Http.GetStringAsync(testServerBaseUrl + url);
+        }
+        finally
+        {
+            requestInProgress = false;
+        }
     }
 }

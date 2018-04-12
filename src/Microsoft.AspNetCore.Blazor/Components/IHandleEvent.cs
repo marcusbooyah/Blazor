@@ -1,7 +1,8 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using Microsoft.AspNetCore.Blazor.RenderTree;
+using System;
+using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Blazor.Components
 {
@@ -15,6 +16,6 @@ namespace Microsoft.AspNetCore.Blazor.Components
         /// </summary>
         /// <param name="handler">The event handler.</param>
         /// <param name="args">Arguments for the event handler.</param>
-        void HandleEvent(UIEventHandler handler, UIEventArgs args);
+        void HandleEvent(Func<UIEventArgs, Task> handler, UIEventArgs args);
     }
 }
