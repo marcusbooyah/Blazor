@@ -1045,9 +1045,9 @@ namespace Microsoft.AspNetCore.Blazor.Test
                 builder.AddContent(6, $"Render count: {++renderCount}");
             }
 
-            public void HandleEvent(Func<UIEventArgs, Task> handler, UIEventArgs args)
+            public void HandleEvent(EventBinding binding, UIEventArgs args)
             {
-                handler(args);
+                binding.Invoke(args);
             }
         }
 
@@ -1108,9 +1108,9 @@ namespace Microsoft.AspNetCore.Blazor.Test
                 Render();
             }
 
-            public void HandleEvent(Func<UIEventArgs, Task> handler, UIEventArgs args)
+            public void HandleEvent(EventBinding binding, UIEventArgs args)
             {
-                var task = handler(args);
+                var task = binding.Invoke(args);
                 Render();
             }
 
@@ -1152,9 +1152,9 @@ namespace Microsoft.AspNetCore.Blazor.Test
             public bool CheckboxEnabled;
             public string SomeStringProperty;
 
-            public void HandleEvent(Func<UIEventArgs, Task> handler, UIEventArgs args)
+            public void HandleEvent(EventBinding binding, UIEventArgs args)
             {
-                handler(args);
+                binding.Invoke(args);
                 TriggerRender();
             }
 

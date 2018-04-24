@@ -1,9 +1,6 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
-using System.Threading.Tasks;
-
 namespace Microsoft.AspNetCore.Blazor.Components
 {
     /// <summary>
@@ -14,8 +11,8 @@ namespace Microsoft.AspNetCore.Blazor.Components
         /// <summary>
         /// Notifies the component that one of its event handlers has been triggered.
         /// </summary>
-        /// <param name="handler">The event handler.</param>
+        /// <param name="binding">The event binding.</param>
         /// <param name="args">Arguments for the event handler.</param>
-        void HandleEvent(Func<UIEventArgs, Task> handler, UIEventArgs args);
+        void HandleEvent(EventBinding binding, UIEventArgs args);
     }
 }
